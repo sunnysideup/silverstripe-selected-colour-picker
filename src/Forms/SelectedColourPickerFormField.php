@@ -7,6 +7,8 @@ use SilverStripe\Forms\DropdownField;
 
 use SilverStripe\ORM\ArrayList;
 
+use SilverStripe\ORM\FieldType\DBField;
+
 use SilverStripe\View\ArrayData;
 
 
@@ -52,10 +54,21 @@ class SelectedColourPickerFormField extends TextField
     public function Field($properties = [])
     {
         $this->setAttribute('list', $this->ID().'_List');
+        if($this->value) {
+            $description = '
+                <span
+                    class="color-cms"
+                    style="display: inline-block; vertical-align: bottom; width: 20px; height: 20px; border-radius: 10px; background-color: '.$this->value.'"
+                >
+                </span>
+                <span> / '.($this->colourOptions[$this->value] ?? $this->value).'</span>';
+                $descriptionObject = DBField::create_field('HTMLText', $description);
+            $this->setDescription($descriptionObject);
+        }
         return parent::Field();
     }
 
-    public function getColourOptions() : array
+    public function ColourOptionsAsArrayList() : ArrayList
     {
         $al = new ArrayList();
         foreach($this->colourOptions as $colour => $label) {

@@ -75,28 +75,23 @@ class DBColour extends DBVarchar
 
     public function scaffoldFormField($title = null, $params = null)
     {
-        $colourhtml = '';
-        if($this->value) {
-            $colorhtml = '
-                <span
-                    class="color-cms"
-                    style="display: inline-block; vertical-align: bottom; width: 20px; height: 20px; border-radius: 10px; background-color: '.$this->value.'"
-                >
-                </span>
-                <span>'.(static::COLOURS[$this->value] ?? 'error').'</span>';
-                $colorhtml= DBField::create_field('HTMLText', $colourhtml);
-        }
+        return static::get_dropdown_field($this->name, $title);
+    }
+
+
+    public static function get_dropdown_field(string $name, string $title): SelectedColourPickerFormField
+    {
         return SelectedColourPickerFormField::create(
-            $this->name,
+            $name,
             $title
         )
             ->setColourOptions(static::COLOURS)
             ->setLimitedToOptions(static::IS_LIMITED_TO_OPTIONS)
-            ->setDescription($colourhtml)
         ;
     }
+
     //
-    // public static function get_dropdown_field(?string $name = 'TextColour', ?string $title = 'Text Colour'): SelectedColourPickerFormField
+    // public static function get_dropdown_field_old(?string $name = 'TextColour', ?string $title = 'Text Colour'): SelectedColourPickerFormField
     // {
     //     $field = SelectedColourPickerFormField::create(
     //         $name,
@@ -114,52 +109,52 @@ class DBColour extends DBVarchar
     //     return $field;
     // }
     //
-    // public static function get_swatches_field(?string $name = 'TextColour', ?string $value = ''): LiteralField
-    // {
-    //     $options = static::get_swatches_field_inner(static::COLOURS, $value, false);
-    //
-    //     return LiteralField::create(
-    //         $name . 'Swatches2',
-    //         '<div class="field ' . $name . '-class">
-    //             <h2>Available Text Colours</h2>' . implode('', $options) . '<hr style="clear: both; " />
-    //         </div>'
-    //     );
-    // }
-    //
-    //
-    // protected static function get_swatches_field_inner($colours, ?string $value = '')
-    // {
-    //     $ids = [];
-    //     foreach ($colours as $colour => $name) {
-    //         if (static::IS_BG_COLOUR) {
-    //             $styleA = 'background-color: ' . $colour . '; color: #eee;';
-    //             $styleB = 'background-color: ' . $colour . '; color: #111;';
-    //         } else {
-    //             $styleA = 'color: ' . $colour . '; background-color: #eee;';
-    //             $styleB = 'color: ' . $colour . '; background-color: #111;';
-    //         }
-    //
-    //         $currentStyle = 'border: 2px solid #000;';
-    //         if ($colour === $value) {
-    //             $currentStyle = 'border: 2px solid red;';
-    //         }
-    //
-    //         $ids[$colour] = '
-    //             <div
-    //                 style="float: left; margin-right: 10px; margin-bottom: 10px; width: auto; border-radius: 15px; font-size: 12px; overflow: hidden; ' . $currentStyle . '"
-    //                 onMouseOver="this.style.borderRadius=\'0px\'"
-    //                 onMouseOut="this.style.borderRadius=\'15px\'"
-    //             >
-    //                 <span style=" display: block; padding: 5px; text-align: center; ' . $styleA . '">
-    //                     ' . $name . ' (' . $colour . ')
-    //                 </span>
-    //                 <span style=" display: block; padding: 5px; text-align: center; ' . $styleB . '">
-    //                     ' . $name . ' (' . $colour . ')
-    //                 </span>
-    //             </div>
-    //             ';
-    //     }
-    //
-    //     return $ids;
-    // }
+    public static function get_swatches_field($name, $value): LiteralField
+    {
+        $options = static::get_swatches_field_inner(static::COLOURS, $value);
+
+        return LiteralField::create(
+            $name . 'SwatchesFor',
+            '<div class="field ' . $name . '-class">
+                <h5 onclick="alert(\'show colours\')">Available Colours</h5>
+                <div style="display: none" id="">' . implode('', $options) . '<hr style="clear: both; " />
+            </div>'
+        );
+    }
+
+    protected static function get_swatches_field_inner($colours, ?string $value = '') : array
+    {
+        $ids = [];
+        foreach ($colours as $colour => $name) {
+            if (static::IS_BG_COLOUR) {
+                $styleA = 'background-color: ' . $colour . '; color: #eee;';
+                $styleB = 'background-color: ' . $colour . '; color: #111;';
+            } else {
+                $styleA = 'color: ' . $colour . '; background-color: #eee;';
+                $styleB = 'color: ' . $colour . '; background-color: #111;';
+            }
+
+            $currentStyle = 'border: 2px solid #000;';
+            if ($colour === $value) {
+                $currentStyle = 'border: 2px solid red;';
+            }
+
+            $ids[$colour] = '
+                <div
+                    style="float: left; margin-right: 10px; margin-bottom: 10px; width: auto; border-radius: 15px; font-size: 12px; overflow: hidden; ' . $currentStyle . '"
+                    onMouseOver="this.style.borderRadius=\'0px\'"
+                    onMouseOut="this.style.borderRadius=\'15px\'"
+                >
+                    <span style=" display: block; padding: 5px; text-align: center; ' . $styleA . '">
+                        ' . $name . ' (' . $colour . ')
+                    </span>
+                    <span style=" display: block; padding: 5px; text-align: center; ' . $styleB . '">
+                        ' . $name . ' (' . $colour . ')
+                    </span>
+                </div>
+                ';
+        }
+
+        return $ids;
+    }
 }
