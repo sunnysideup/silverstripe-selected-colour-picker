@@ -3,20 +3,14 @@
 namespace Sunnysideup\SelectedColourPicker\Forms;
 
 use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\DropdownField;
-
 use SilverStripe\ORM\ArrayList;
-
 use SilverStripe\ORM\FieldType\DBField;
-
 use SilverStripe\View\ArrayData;
-
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
-
+use SilverStripe\Forms\Validator;
 
 class SelectedColourPickerFormField extends TextField
 {
-
     protected $inputType = 'color';
 
     protected $colourOptions = [];
@@ -28,24 +22,29 @@ class SelectedColourPickerFormField extends TextField
     public function setColourOptions(array $array)
     {
         $this->colourOptions = $array;
+
         return $this;
     }
 
     public function setLimitedToOptions(bool $bool)
     {
         $this->limitedToOptions = $bool;
+
         return $this;
     }
 
     public function setIsBgColour(bool $bool)
     {
         $this->isBgColour = $bool;
+
         return $this;
     }
+
     /**
-     * Validate this field
+     * Validate this field.
      *
      * @param Validator $validator
+     *
      * @return bool
      */
     public function validate($validator)
@@ -54,16 +53,18 @@ class SelectedColourPickerFormField extends TextField
             $validator->validationError(
                 $this->name,
                 'Please selected from suggested options only',
-                "validation"
+                'validation'
             );
+
             return false;
         }
+
         return true;
     }
 
     public function Field($properties = [])
     {
-        $this->setAttribute('list', $this->ID().'_List');
+        $this->setAttribute('list', $this->ID() . '_List');
         $this->setDescription(
             DBField::create_field(
                 'HTMLText',
@@ -79,10 +80,10 @@ class SelectedColourPickerFormField extends TextField
         return parent::Field();
     }
 
-    public function ColourOptionsAsArrayList() : ArrayList
+    public function ColourOptionsAsArrayList(): ArrayList
     {
         $al = new ArrayList();
-        foreach($this->colourOptions as $colour => $label) {
+        foreach ($this->colourOptions as $colour => $label) {
             $al->push(
                 new ArrayData(
                     [
@@ -92,6 +93,7 @@ class SelectedColourPickerFormField extends TextField
                 )
             );
         }
+
         return $al;
     }
 
@@ -99,8 +101,6 @@ class SelectedColourPickerFormField extends TextField
     {
         return 'selected-colour-picker';
     }
-
-
 }
 
 // <span

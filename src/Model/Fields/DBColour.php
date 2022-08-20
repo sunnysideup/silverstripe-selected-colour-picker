@@ -2,46 +2,42 @@
 
 namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
-use TractorCow\Colorpicker\Color;
-
 use SilverStripe\Forms\LiteralField;
-use SilverStripe\Forms\DropdownField;
-
-use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\ORM\FieldType\DBVarchar;
-
 use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormField;
-
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
+use TractorCow\Colorpicker\Color;
 
 class DBColour extends DBVarchar
 {
-
     /**
      * please set
-     * must be defined as #AABB99 (hex codes)
+     * must be defined as #AABB99 (hex codes).
+     *
      * @var array
      */
     protected const COLOURS = [];
 
     /**
-     * please set
+     * please set.
+     *
      * @var string`
      */
     protected const CSS_CLASS_PREFIX = 'db-colour';
 
     /**
-     * please set
-     * @var string
+     * please set.
+     *
+     * @var bool
      */
     protected const IS_LIMITED_TO_OPTIONS = true;
 
     /**
-     * please set
-     * @var string
+     * please set.
+     *
+     * @var bool
      */
     protected const IS_BG_COLOUR = true;
-
 
     private static $casting = [
         'CssClass' => 'Varchar',
@@ -52,41 +48,34 @@ class DBColour extends DBVarchar
         parent::__construct($name, $size);
     }
 
-
-    public function CssClass() : string
+    public function CssClass(): string
     {
         return $this->getCssClass();
     }
 
-    public function getCssClass() : string
+    public function getCssClass(): string
     {
         $name = static::COLOURS[$this->value] ?? 'no-colour';
+
         return $this->classCleanup($name);
     }
 
-    public function CssClassAlternative() : string
+    public function CssClassAlternative(): string
     {
         return $this->getCssClassAlternative();
     }
 
-    public function getCssClassAlternative() : string
+    public function getCssClassAlternative(): string
     {
         $name = $this->value ?: 'no-colour';
-        return $this->classCleanup($name);
-    }
 
-    private function classCleanup(string $name) : string
-    {
-        $name = str_replace('#', '', $name);
-        $name = preg_replace("/[^A-Za-z0-9]/", '-', $name);
-        return static::CSS_CLASS_PREFIX . '-'.trim(trim(strtolower($name),'-'));
+        return $this->classCleanup($name);
     }
 
     public function scaffoldFormField($title = null, $params = null)
     {
         return static::get_dropdown_field($this->name, $title);
     }
-
 
     public static function get_dropdown_field(string $name, ?string $title = ''): SelectedColourPickerFormField
     {
@@ -105,8 +94,14 @@ class DBColour extends DBVarchar
         return SelectedColourPickerFormFieldSwatches::get_swatches_field($name, $value, static::COLOURS, static::IS_BG_COLOUR);
     }
 
-}
+    private function classCleanup(string $name): string
+    {
+        $name = str_replace('#', '', $name);
+        $name = preg_replace('#[^A-Za-z0-9]#', '-', $name);
 
+        return static::CSS_CLASS_PREFIX . '-' . trim(trim(strtolower($name), '-'));
+    }
+}
 
 //
 // public static function get_dropdown_field_old(?string $name = 'TextColour', ?string $title = 'Text Colour'): SelectedColourPickerFormField
