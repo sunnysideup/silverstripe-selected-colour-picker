@@ -1,0 +1,35 @@
+{
+  "name": "sunnysideup/selected-colour-picker",
+  "description": "Silverstrpe Module that sets a list of colours that the CMS Editor can choose from.",
+  "keywords": [
+    "Silverstripe-CMS",
+    "CMS",
+    "Silverstripe",
+    "default",
+    "colour",
+    "color",
+    "form",
+    "form field",
+    "database field",
+    "seeding"
+  ],
+  "type": "silverstripe-vendormodule",
+  "require": {
+    "silverstripe/framework": "^4.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Nicolaas Francken",
+      "email": "modules@sunnysideup.co.nz",
+      "role": "lead developer"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Sunnysideup\\SelectedColourPicker\\": "src/"
+    }
+  }
+}
