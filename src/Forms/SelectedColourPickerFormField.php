@@ -11,6 +11,8 @@ use SilverStripe\ORM\FieldType\DBField;
 
 use SilverStripe\View\ArrayData;
 
+use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
+
 
 class SelectedColourPickerFormField extends TextField
 {
@@ -21,6 +23,8 @@ class SelectedColourPickerFormField extends TextField
 
     protected $limitedToOptions = true;
 
+    protected $isBgColour = true;
+
     public function setColourOptions(array $array)
     {
         $this->colourOptions = $array;
@@ -30,6 +34,12 @@ class SelectedColourPickerFormField extends TextField
     public function setLimitedToOptions(bool $bool)
     {
         $this->limitedToOptions = $bool;
+        return $this;
+    }
+
+    public function setIsBgColour(bool $bool)
+    {
+        $this->isBgColour = $bool;
         return $this;
     }
     /**
@@ -54,17 +64,18 @@ class SelectedColourPickerFormField extends TextField
     public function Field($properties = [])
     {
         $this->setAttribute('list', $this->ID().'_List');
-        if($this->value) {
-            $description = '
-                <span
-                    class="color-cms"
-                    style="display: inline-block; vertical-align: bottom; width: 20px; height: 20px; border-radius: 10px; background-color: '.$this->value.'"
-                >
-                </span>
-                <span> / '.($this->colourOptions[$this->value] ?? $this->value).'</span>';
-                $descriptionObject = DBField::create_field('HTMLText', $description);
-            $this->setDescription($descriptionObject);
-        }
+        $this->setDescription(
+            DBField::create_field(
+                'HTMLText',
+                SelectedColourPickerFormFieldSwatches::get_swatches_html(
+                    $this->name,
+                    $this->value,
+                    $this->colourOptions,
+                    $this->isBgColour
+                )
+            )
+        );
+
         return parent::Field();
     }
 
@@ -91,3 +102,9 @@ class SelectedColourPickerFormField extends TextField
 
 
 }
+
+// <span
+//     class="color-cms"
+//     style="display: inline-block; vertical-align: bottom; width: 20px; height: 20px; border-radius: 10px; background-color: '.$this->value.'"
+// >
+// </span>
