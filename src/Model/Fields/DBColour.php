@@ -48,27 +48,34 @@ class DBColour extends DBVarchar
         parent::__construct($name, $size);
     }
 
-    public function CssClass(): string
+    public function CssClass(?bool $isTransparent = false): string
     {
         return $this->getCssClass();
     }
 
-    public function getCssClass(): string
+    public function getCssClass(?bool $isTransparent = false): string
     {
-        $name = static::COLOURS[$this->value] ?? 'no-colour';
+        if($isTransparent) {
+            $name = 'transparent';
+        } else {
+            $name = static::COLOURS[$this->value] ?? 'colour-error';
+        }
 
         return $this->classCleanup($name);
     }
 
-    public function CssClassAlternative(): string
+    public function CssClassAlternative(?bool $isTransparent = false): string
     {
         return $this->getCssClassAlternative();
     }
 
-    public function getCssClassAlternative(): string
+    public function getCssClassAlternative(?bool $isTransparent = false): string
     {
-        $name = $this->value ?: 'no-colour';
-
+        if($isTransparent) {
+            $name = 'ffffff00';
+        } else {
+            $name = $this->value ?: 'no-colour';
+        }
         return $this->classCleanup($name);
     }
 

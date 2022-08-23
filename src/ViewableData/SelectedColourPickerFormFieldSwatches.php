@@ -25,7 +25,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
         return '
             <div class="field ' . $name . '-class">
                 <p>
-                    Current Value: ' . ($colours[$value] ?? $value) . ',
+                    Current Value: ' . ($colours[$value] ?? $value) . ', '.$value.'
                     <a onclick="' . $js . '" style="cursor: pointer;"><u>show available colours</u></a>
                 </p>
                 <div style="display: none" id="' . $id . '">' . implode('', $options) . '<hr style="clear: both; " /></div>
