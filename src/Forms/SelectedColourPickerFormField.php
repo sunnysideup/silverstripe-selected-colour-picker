@@ -13,15 +13,15 @@ class SelectedColourPickerFormField extends TextField
 {
     protected $inputType = 'color';
 
-    protected $colourOptions = [];
+    protected $source = [];
 
     protected $limitedToOptions = true;
 
     protected $isBgColour = true;
 
-    public function setColourOptions(array $array)
+    public function setOptions(array $array)
     {
-        $this->colourOptions = $array;
+        $this->source = $array;
 
         return $this;
     }
@@ -49,7 +49,7 @@ class SelectedColourPickerFormField extends TextField
      */
     public function validate($validator)
     {
-        if ($this->limitedToOptions && $this->value && ! isset($this->colourOptions[$this->value])) {
+        if ($this->limitedToOptions && $this->value && ! isset($this->source[$this->value])) {
             $validator->validationError(
                 $this->name,
                 'Please selected from suggested options only',
@@ -71,7 +71,7 @@ class SelectedColourPickerFormField extends TextField
                 SelectedColourPickerFormFieldSwatches::get_swatches_html(
                     $this->name,
                     $this->value,
-                    $this->colourOptions,
+                    $this->source,
                     $this->isBgColour
                 )
             )
@@ -83,7 +83,7 @@ class SelectedColourPickerFormField extends TextField
     public function ColourOptionsAsArrayList(): ArrayList
     {
         $al = new ArrayList();
-        foreach ($this->colourOptions as $colour => $label) {
+        foreach ($this->source as $colour => $label) {
             $al->push(
                 new ArrayData(
                     [

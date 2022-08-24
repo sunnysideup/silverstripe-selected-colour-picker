@@ -57,7 +57,7 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
                 SelectedColourPickerFormFieldSwatches::get_swatches_html(
                     $this->name,
                     $this->value,
-                    $this->colourOptions,
+                    $this->getListMap($this->source),
                     $this->isBgColour
                 )
             )

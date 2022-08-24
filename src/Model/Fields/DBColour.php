@@ -104,7 +104,7 @@ class DBColour extends DBVarchar
             $name,
             $title
         )
-            ->setColourOptions(static::COLOURS)
+            ->setSource(static::COLOURS)
             ->setLimitedToOptions(static::IS_LIMITED_TO_OPTIONS)
             ->setIsBgColour(static::IS_BG_COLOUR);
         ;
