@@ -36,7 +36,7 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
      */
     public function validate($validator)
     {
-        if ($this->limitedToOptions && $this->value && ! isset($this->colourOptions[$this->value])) {
+        if ($this->limitedToOptions && $this->value && ! isset($this->source[$this->value])) {
             $validator->validationError(
                 $this->name,
                 'Please selected from suggested options only',
