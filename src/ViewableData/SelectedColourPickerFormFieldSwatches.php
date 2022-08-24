@@ -6,6 +6,8 @@ use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\View\ViewableData;
 
+use SilverStripe\ORM\FieldType\DBField;
+
 class SelectedColourPickerFormFieldSwatches extends ViewableData
 {
     public static function get_swatches_field(string $name, string $value, array $colours, bool $isBackgroundColour): LiteralField
@@ -14,6 +16,14 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
             'SwatchesFor' . $name,
             self::get_swatches_html($name, $value, $colours, $isBackgroundColour)
         );
+    }
+
+    public static function colour_and_background_swatch(string $colour, string $bgColour, ?bool $asHTML = true)
+    {
+        $html = '<span style="color: '.$colour.'!important; background-color: '.$bgColour.'!important; padding: 4px; width: auto; text-align: center; border-radius: 4px; display: inline-block;">example</span>';
+        if($asHTML) {
+            return DBField::create_field('HTMLText', $html);
+        }
     }
 
     public static function get_swatches_html(string $name, string $value, array $colours, bool $isBackgroundColour): string
