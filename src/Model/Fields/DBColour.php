@@ -2,14 +2,21 @@
 
 namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
+use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\FieldType\DBVarchar;
+
+use SilverStripe\Core\Config\Config;
 use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormField;
+use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormFieldDropdown;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 use TractorCow\Colorpicker\Color;
 
 class DBColour extends DBVarchar
 {
+
+    private static $colour_picker_field_class_name = SelectedColourPickerFormFieldDropdown::class;
+
     /**
      * please set
      * must be defined as #AABB99 (hex codes).
@@ -84,16 +91,24 @@ class DBColour extends DBVarchar
         return static::get_dropdown_field($this->name, $title);
     }
 
-    public static function get_dropdown_field(string $name, ?string $title = ''): SelectedColourPickerFormField
+    /**
+     *
+     * @param  string $name
+     * @param  string $title
+     * @return FormField
+     */
+    public static function get_dropdown_field(string $name, ?string $title = '')
     {
-        return SelectedColourPickerFormField::create(
+        $className = Config::inst()->get(DBColour::class, 'colour_picker_field_class_name');
+        return $className::create(
             $name,
             $title
         )
-            ->setColourOptions(static::COLOURS)
+            ->setSource(static::COLOURS)
             ->setLimitedToOptions(static::IS_LIMITED_TO_OPTIONS)
-            ->setIsBgColour(static::IS_BG_COLOUR)
+            ->setIsBgColour(static::IS_BG_COLOUR);
         ;
+        return $field;
     }
 
     public static function get_swatches_field(string $name, string $value): LiteralField

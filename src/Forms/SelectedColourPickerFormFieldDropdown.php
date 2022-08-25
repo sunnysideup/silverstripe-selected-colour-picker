@@ -8,23 +8,10 @@ use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\View\ArrayData;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 use SilverStripe\Forms\Validator;
+use SilverStripe\Forms\DropdownField;
 
-class SelectedColourPickerFormField extends TextField
+class SelectedColourPickerFormFieldDropdown extends DropdownField
 {
-    protected $inputType = 'color';
-
-    protected $source = [];
-
-    protected $limitedToOptions = true;
-
-    protected $isBgColour = true;
-
-    public function setOptions(array $array)
-    {
-        $this->source = $array;
-
-        return $this;
-    }
 
     public function setLimitedToOptions(bool $bool)
     {
@@ -64,14 +51,13 @@ class SelectedColourPickerFormField extends TextField
 
     public function Field($properties = [])
     {
-        $this->setAttribute('list', $this->ID() . '_List');
         $this->setDescription(
             DBField::create_field(
                 'HTMLText',
                 SelectedColourPickerFormFieldSwatches::get_swatches_html(
                     $this->name,
                     $this->value,
-                    $this->source,
+                    $this->getListMap($this->source),
                     $this->isBgColour
                 )
             )
@@ -80,27 +66,6 @@ class SelectedColourPickerFormField extends TextField
         return parent::Field();
     }
 
-    public function ColourOptionsAsArrayList(): ArrayList
-    {
-        $al = new ArrayList();
-        foreach ($this->source as $colour => $label) {
-            $al->push(
-                new ArrayData(
-                    [
-                        'Colour' => $colour,
-                        'Label' => $label,
-                    ]
-                )
-            );
-        }
-
-        return $al;
-    }
-
-    public function Type()
-    {
-        return 'selected-colour-picker';
-    }
 }
 
 // <span
