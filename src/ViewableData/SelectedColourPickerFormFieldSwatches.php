@@ -8,8 +8,15 @@ use SilverStripe\View\ViewableData;
 
 class SelectedColourPickerFormFieldSwatches extends ViewableData
 {
-    public static function get_swatches_field(string $name, string $value, array $colours, bool $isBackgroundColour): LiteralField
+    public static function get_swatches_field(string $name, ?string $value, array $colours, bool $isBackgroundColour): LiteralField
     {
+        if(! $value || strlen($value) !== 7) {
+            if($isBackgroundColour) {
+                $colour = '#ffffff';
+            } else {
+                $colour = '#000000';
+            }
+        }
         return LiteralField::create(
             'SwatchesFor' . $name,
             self::get_swatches_html($name, $value, $colours, $isBackgroundColour)
