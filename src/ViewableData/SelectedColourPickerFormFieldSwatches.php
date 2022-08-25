@@ -12,13 +12,6 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
 {
     public static function get_swatches_field(string $name, ?string $value, array $colours, bool $isBackgroundColour): LiteralField
     {
-        if(! $value || strlen($value) !== 7) {
-            if($isBackgroundColour) {
-                $colour = '#ffffff';
-            } else {
-                $colour = '#000000';
-            }
-        }
         return LiteralField::create(
             'SwatchesFor' . $name,
             self::get_swatches_html($name, $value, $colours, $isBackgroundColour)
@@ -33,7 +26,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
         }
     }
 
-    public static function get_swatches_html(string $name, string $value, array $colours, bool $isBackgroundColour): string
+    public static function get_swatches_html(string $name, ?string $value, array $colours, bool $isBackgroundColour): string
     {
         $options = static::get_swatches_field_inner($value, $colours, $isBackgroundColour);
         $id = $name . rand(0, 99999999999);
@@ -88,12 +81,13 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
         return ($prependHash ? '#' : '') . $r . $g . $b;
     }
 
-    protected static function get_swatches_field_inner(string $value, array $colours, bool $isBackgrounColour): array
+    protected static function get_swatches_field_inner(string $value, array $colours, bool $isBackgroundColour): array
     {
+        $value = self::check_colour($value, $isBackgroundColour);
         $ids = [];
         foreach ($colours as $colour => $name) {
             $invertColour = self::hex_invert($colour);
-            if ($isBackgrounColour) {
+            if ($isBackgroundColour) {
                 $styleA = 'background-color: ' . $colour . '; color: ' . $invertColour . '; ';
             } else {
                 $styleA = 'color: ' . $colour . '; background-color: ' . $invertColour . ';';
@@ -118,6 +112,18 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
         }
 
         return $ids;
+    }
+
+    protected static function check_colour(?string $colour, ?bool $isBackgroundColour = false) : string
+    {
+        if(! $colour || strlen($colour) !== 7) {
+            if($isBackgroundColour) {
+                $colour = '#ffffff';
+            } else {
+                $colour = '#000000';
+            }
+        }
+        return $colour;
     }
 }
 
