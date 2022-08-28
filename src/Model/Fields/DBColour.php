@@ -113,7 +113,7 @@ class DBColour extends DBVarchar
 
     public static function get_swatches_field(string $name, string $value): LiteralField
     {
-        return SelectedColourPickerFormFieldSwatches::get_swatches_field($name, $value, static::COLOURS, static::IS_BG_COLOUR);
+        return SelectedColourPickerFormFieldSwatches::get_swatches_field((string) $name, (string) $value, static::COLOURS, static::IS_BG_COLOUR);
     }
 
     private function classCleanup(string $name): string
