@@ -12,18 +12,34 @@ use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormFieldDropdown
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 use TractorCow\Colorpicker\Color;
 
-class DBColour extends DBVarchar
+class DBColour extends Color
 {
-
     private static $colour_picker_field_class_name = SelectedColourPickerFormFieldDropdown::class;
 
     /**
      * please set
      * must be defined as #AABB99 (hex codes).
+     * Needs to be set like this:
+     * ```php
+     *     [
+     *         'schema1' => [
+     *             '#fff000' => 'My Colour 1',
+     *             '#fff000' => 'My Colour 2',
+     *         ],
+     *
+     *     ]
+     *
+     * ```
      *
      * @var array
      */
-    protected const COLOURS = [];
+    private static $colours = [
+        'default' => [
+            '#FF0000' => 'Red',
+            '#0000FF' => 'Blue',
+            '#00FF00' => 'Green',
+        ]
+    ];
 
     /**
      * please set.
@@ -48,12 +64,16 @@ class DBColour extends DBVarchar
 
     private static $casting = [
         'CssClass' => 'Varchar',
+        'CssClassAlternative' => 'Boolean',
         'ReadableColor' => 'Varchar'
     ];
 
-    public function __construct($name = null, $size = 9)
+    private static $schema = 'default';
+
+    public function __construct($name = null, $schema = 'default', $options = [])
     {
-        parent::__construct($name, $size);
+        $this->schema = $schema;
+        parent::__construct($name, $options);
     }
 
     public function CssClass(?bool $isTransparent = false): string
@@ -63,10 +83,11 @@ class DBColour extends DBVarchar
 
     public function getCssClass(?bool $isTransparent = false): string
     {
+        $colous = $this->getColours();
         if($isTransparent) {
             $name = 'transparent';
         } else {
-            $name = static::COLOURS[$this->value] ?? 'colour-error';
+            $name = $colours[$this->value] ?? 'colour-error';
         }
 
         return $this->classCleanup($name);
@@ -112,6 +133,8 @@ class DBColour extends DBVarchar
         return $field;
     }
 
+
+
     public static function get_swatches_field(string $name, string $value): LiteralField
     {
         return SelectedColourPickerFormFieldSwatches::get_swatches_field((string) $name, (string) $value, static::COLOURS, static::IS_BG_COLOUR);
@@ -153,6 +176,92 @@ class DBColour extends DBVarchar
 
         return static::CSS_CLASS_PREFIX . '-' . trim(trim(strtolower($name), '-'));
     }
+
+    public static function my_colours_for_dropdown(): ?array
+    {
+        if ($colours = self::my_colours()) {
+            $array = [];
+
+            foreach ($colours as $code => $label) {
+                $textColor = Helper::isColorLight($code) ? '#000' : '#FFF';
+
+                $array[$code] = [
+                    'label' => $label,
+                    'background_css' => $code,
+                    'color_css' => $textColor,
+                    'sample_text' => 'Aa',
+                ];
+            }
+
+            return $array;
+        }
+        return null;
+    }
+
+
+    /**
+     * Detects if the given color is light
+     * @param string $colour HEX color code
+     */
+    public static function fontColour($colour): string
+    {
+        return self::isColorLight((string) $colour) ? '#000000' : '#ffffff';
+    }
+    /**
+     * @param string $colour HEX color code
+     */
+    public static function isDarkColour($colour): bool
+    {
+        return self::isColorLight((string) $colour) ? false : true;
+    }
+
+    /**
+     * Detects if the given color is light
+     * @param string $colour HEX color code
+     */
+    public static function isColorLight($colour): bool
+    {
+        if ($colour === 'transparent') {
+            return true;
+        }
+        $colourWithoutHash = str_replace('#', '', (string) $colour);
+        // Convert the color to its RGB values
+        $rgb = sscanf($colourWithoutHash, "%02x%02x%02x");
+        if (isset($rgb[0], $rgb[1], $rgb[2])) {
+            // Calculate the relative luminance of the color using the formula from the W3C
+            $luminance = 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
+
+            // If the luminance is greater than 50%, the color is considered light
+            return $luminance > 128;
+        }
+        return true;
+    }
+
+
+    protected static function check_colour(?string $colour, ?bool $isBackgroundColour = false): string
+    {
+        if(! $colour || strlen($colour) !== 7) {
+            if($isBackgroundColour) {
+                $colour = '#ffffff';
+            } else {
+                $colour = '#000000';
+            }
+        }
+        return $colour;
+    }
+
+    protected function getColours(): array
+    {
+        return $this->Config()->get('colours');
+    }
+
+    protected function getMyColours(): array
+    {
+        $colours = $this->getColours();
+
+        return $colours[$this->schema] ?? $colours[$this->schema];
+    }
+
 }
 
 //
