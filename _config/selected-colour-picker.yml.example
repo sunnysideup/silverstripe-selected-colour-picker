@@ -1,3 +1,9 @@
 ---
 Name: selected-colour-picker-settings
+   - corefieldtypes
+   - colorpicker-fieldtypes
 ---
+
+SilverStripe\Core\Injector\Injector:
+  Colour:
+    class: Sunnysideup\SelectedColourPicker\Model\Fields\DBColour
