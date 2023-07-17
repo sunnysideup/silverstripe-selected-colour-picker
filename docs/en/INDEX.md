@@ -1,3 +1,7 @@
+## add colour to DataObject
+
+Here is how to add a colour to a DataObject:
+
 ```php
 
     private static $db = [
@@ -5,6 +9,7 @@
     ]
 
 ```
+### Usage in SilverStripe template
 
 ```ss
 
