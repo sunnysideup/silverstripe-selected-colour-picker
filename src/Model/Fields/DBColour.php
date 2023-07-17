@@ -48,6 +48,7 @@ class DBColour extends DBVarchar
 
     private static $casting = [
         'CssClass' => 'Varchar',
+        'ReadableColor' => 'Varchar'
     ];
 
     public function __construct($name = null, $size = 9)
@@ -116,6 +117,35 @@ class DBColour extends DBVarchar
         return SelectedColourPickerFormFieldSwatches::get_swatches_field((string) $name, (string) $value, static::COLOURS, static::IS_BG_COLOUR);
     }
 
+    public function ReadableColor(): string
+    {
+        return $this->getReadableColor();
+    }
+    public function getReadableColor(): string
+    {
+        // Remove '#' if it's present
+        $hexColor = ltrim((string) $this->value, '#');
+
+        // Check if the color is valid
+        if(strlen($hexColor) == 6) {
+            // Convert the color from hexadecimal to RGB
+            $r = hexdec(substr($hexColor, 0, 2)) / 255;
+            $g = hexdec(substr($hexColor, 2, 2)) / 255;
+            $b = hexdec(substr($hexColor, 4, 2)) / 255;
+
+            // Calculate the relative luminance
+            $luminance = 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
+
+            // Return either black or white, depending on the luminance
+            if($luminance > 0.5) {
+                return '#000000'; // Black color
+            } else {
+                return '#ffffff'; // White color
+            }
+        } else {
+            return false; // Invalid color
+        }
+    }
     private function classCleanup(string $name): string
     {
         $name = str_replace('#', '', $name);
