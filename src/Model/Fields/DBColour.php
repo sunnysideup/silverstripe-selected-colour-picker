@@ -232,7 +232,7 @@ class DBColour extends Color
     public function getReadableColour(): static
     {
         // Remove '#' if it's present
-        return static::get_font_colour($this->value, $this->name);
+        return static::get_font_colour((string) $this->value, $this->name);
     }
 
     public function Inverted(): static
