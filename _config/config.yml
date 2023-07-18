@@ -2,6 +2,10 @@
 Name: selected-colour-picker
 ---
 
+SilverStripe\Admin\LeftAndMain:
+  extra_requirements_css:
+    - 'sunnysideup/selected-colour-picket: client/dist/styles/main.css'
+    ''
 
 SilverStripe\Core\Injector\Injector:
   Colour:
@@ -15,3 +19,5 @@ SilverStripe\Core\Injector\Injector:
 SilverStripe\Core\Injector\Injector:
   BackgroundColour:
     class: Sunnysideup\SelectedColourPicker\Model\Fields\BackgroundColour
+
+

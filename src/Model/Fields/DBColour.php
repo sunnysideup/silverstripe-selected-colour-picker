@@ -2,13 +2,12 @@
 
 namespace Sunnysideup\SelectedColourPicker\Model\Fields\DBColour;
 
+use Fromholdio\ColorPalette\Fields\ColorPaletteField;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\LiteralField;
-use SilverStripe\ORM\FieldType\DBVarchar;
 
 use SilverStripe\Core\Config\Config;
 use SilverStripe\ORM\FieldType\DBField;
-use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormField;
 use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormFieldDropdown;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 use TractorCow\Colorpicker\Color;
@@ -83,14 +82,17 @@ class DBColour extends Color
     protected const IS_BG_COLOUR = true;
 
     private static $casting = [
+        // related colours
+        'Readablecolour' => 'Varchar',
+        'RelatedColourByName' => 'Varchar',
+        'Inverted' => 'Varchar',
+        // css
         'CssVariableDefinition' => 'Varchar',
         'CssClass' => 'Varchar',
         'CssClassAlternative' => 'Boolean',
-        'ReadableColor' => 'Varchar',
-        'RelatedColourByName' => 'Varchar',
+        // booleans
         'IsDarkColour' => 'Boolean',
         'IsLightColour' => 'Boolean',
-        'Inverted' => 'Boolean',
     ];
 
 
@@ -99,10 +101,6 @@ class DBColour extends Color
         parent::__construct($name, $options);
     }
 
-    public function getCssVariableDefinition(): string
-    {
-        return '--' . $this->getName() . ': ' . $this->getValue() . ';';
-    }
 
     public static function my_colours(): array
     {
@@ -135,7 +133,7 @@ class DBColour extends Color
             $name,
             $title
         )
-            ->setSource(self::my_colours($name))
+            ->setSource(self::my_colours())
             ->setLimitedToOptions(static::IS_LIMITED_TO_OPTIONS)
             ->setIsBgColour($isBackgroundColour);
         ;
@@ -152,20 +150,20 @@ class DBColour extends Color
             $array = [];
 
             foreach ($colours as $code => $label) {
-                $textColor = self::get_font_colour($code) ;
+                $textcolour = self::get_font_colour($code) ;
                 if($isBackgroundColour) {
                     $array[$code] = [
                         'label' => $label,
                         'background_css' => $code,
-                        'color_css' => $textColor,
+                        'colour_css' => $textcolour,
                         'sample_text' => 'Aa',
                     ];
 
                 } else {
                     $array[$code] = [
                         'label' => $label,
-                        'background_css' => $textColor,
-                        'color_css' => $code,
+                        'background_css' => $textcolour,
+                        'colour_css' => $code,
                         'sample_text' => 'Aa',
                     ];
                 }
@@ -178,16 +176,17 @@ class DBColour extends Color
 
 
     /**
-     * Detects if the given color is light
-     * @param string $colour HEX color code
+     * Detects if the given colour is light
+     * @param string $colour HEX colour code
      */
-    public static function get_font_colour(?string $colour = ''): string
+    public static function get_font_colour(?string $colour = ''): static
     {
-        return self::is_light_colour((string) $colour) ? '#000000' : '#ffffff';
+        $colour = self::is_light_colour((string) $colour) ? '#000000' : '#ffffff';
+        return self::get_colour_as_db_field($colour);
     }
 
     /**
-     * @param string $colour HEX color code
+     * @param string $colour HEX colour code
      */
     public static function is_dark_colour(?string $colour = ''): bool
     {
@@ -195,12 +194,12 @@ class DBColour extends Color
     }
 
     /**
-     * Detects if the given color is light
-     * @param string $colour HEX color code
+     * Detects if the given colour is light
+     * @param string $colour HEX colour code
      */
     public static function is_light_colour(?string $colour = ''): bool
     {
-        return DBField::create_field(DBColour::class, $colour)
+        return self::get_colour_as_db_field($colour)
             ->Luminance() > 0.5;
     }
 
@@ -226,7 +225,53 @@ class DBColour extends Color
 
     public function scaffoldFormField($title = null, $params = null)
     {
-        return static::get_dropdown_field($this->name, $title);
+        return ColorPaletteField::create($this->name, $title, self::get_colours_for_dropdown());
+    }
+
+
+    public function getReadablecolour(): static
+    {
+        // Remove '#' if it's present
+        return self::get_font_colour($this->value);
+    }
+
+    public function Inverted(): static
+    {
+        // Ensure the colour is 6 characters long
+        $colour = str_pad(ltrim($this->value, "#"), 6, '0', STR_PAD_RIGHT);
+
+        // Convert the colour to decimal
+        $colour = hexdec($colour);
+
+        // Invert the colour
+        $colour = 0xFFFFFF - $colour;
+
+        // Convert the colour back to hex
+        $colour = dechex($colour);
+
+        // Ensure the colour is 6 characters long
+        $colour = str_pad($colour, 6, '0', STR_PAD_LEFT);
+
+        return self::get_colour_as_db_field($colour);
+    }
+
+    public function getRelatedColourByName(string $name): static
+    {
+        $colours = Config::inst()->get(static::class, 'linked_colours');
+        $colour = $colours($this->value)[$name] ?? 'error';
+        return self::get_colour_as_db_field($colour);
+    }
+
+    public function getCssVariableDefinition($rootElement = ':root'): string
+    {
+        $style = PHP_EOL.$rootElement . '{';
+        $style .= PHP_EOL. '--colour-' . strtolower($this->getName()) . ': ' . $this->getValue() . ';';
+        if(self::IS_BG_COLOUR) {
+            $readableColour = $this->getReadablecolour();
+            $style .= PHP_EOL. '--colour-font-' . strtolower($readableColour->getName()) . ': ' . $readableColour->getValue() . ';';
+        }
+        $style = PHP_EOL . '}';
+        return $style;
     }
 
     public function getCssClass(?bool $isTransparent = false): string
@@ -252,13 +297,6 @@ class DBColour extends Color
         return $this->classCleanup($name);
     }
 
-
-    public function getReadableColor(): string
-    {
-        // Remove '#' if it's present
-        return $this->getFontColour();
-    }
-
     public function getIsLightColour(): bool
     {
         return self::is_light_colour($this->value);
@@ -267,26 +305,6 @@ class DBColour extends Color
     public function getIsDarkColour(): bool
     {
         return self::is_light_colour($this->value) ? false : true;
-    }
-
-    public function Inverted(): string
-    {
-        // Ensure the color is 6 characters long
-        $color = str_pad(ltrim($this->value, "#"), 6, '0', STR_PAD_RIGHT);
-
-        // Convert the color to decimal
-        $color = hexdec($color);
-
-        // Invert the color
-        $color = 0xFFFFFF - $color;
-
-        // Convert the color back to hex
-        $color = dechex($color);
-
-        // Ensure the color is 6 characters long
-        $color = str_pad($color, 6, '0', STR_PAD_LEFT);
-
-        return $color;
     }
 
     private function classCleanup(string $name): string
@@ -298,12 +316,6 @@ class DBColour extends Color
     }
 
 
-    public function getRelatedColourByName(string $name): string
-    {
-        $colours = Config::inst()->get(static::class, 'linked_colours');
-        $colour = $colours($this->value)[$name] ?? 'error';
-        return DBField::create_field(DBColour::class, $colour)->getValue();
-    }
 
 
     protected function getColours(): array
@@ -324,7 +336,7 @@ class DBColour extends Color
     protected static function get_colour_as_db_field(string $colour)
     {
         if(! isset(self::$object_cache[$colour])) {
-            self::$object_cache[$colour] = DBField::create_field(DBColour::class, $colour);
+            self::$object_cache[$colour] = DBField::create_field(static::class, $colour);
         }
         return self::$object_cache[$colour];
     }

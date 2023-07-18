@@ -13,7 +13,7 @@ use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormFieldDropdown
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 use TractorCow\Colorpicker\Color;
 
-class DBColour extends DBColour
+class BackgroundColour extends DBColour
 {
     /**
      * please set.
