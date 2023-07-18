@@ -2,7 +2,7 @@
 
 namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
-class BackgroundColour extends DBColour
+class DBBackgroundColour extends DBColour
 {
     /**
      * please set.

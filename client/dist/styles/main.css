@@ -1,4 +1,16 @@
-.colorpalette li label {
-    border: 1px solid #000;
-    border-radius: 3px;
+.colorpalettefield.ColorPaletteField .ColorPaletteField__colors {
+  flex-wrap: wrap!important;
 }
+.ColorPaletteField.colorpalettefield.ColorPaletteField li.ColorPaletteField__color {
+  text-align: center;
+}
+.ColorPaletteField.colorpalettefield.ColorPaletteField li.ColorPaletteField__color label {
+    border: 1px solid #000!important;
+    border-radius: 50%;
+    text-align:  center;
+}
+
+
+
+
+
