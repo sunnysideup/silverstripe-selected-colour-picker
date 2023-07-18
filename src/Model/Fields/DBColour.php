@@ -7,6 +7,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\FieldType\DBVarchar;
 
 use SilverStripe\Core\Config\Config;
+use SilverStripe\ORM\FieldType\DBField;
 use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormField;
 use Sunnysideup\SelectedColourPicker\Forms\SelectedColourPickerFormFieldDropdown;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
@@ -34,12 +35,17 @@ class DBColour extends Color
      * @var array
      */
     private static $colours = [
-        'default' => [
-            '#FF0000' => 'Red',
-            '#0000FF' => 'Blue',
-            '#00FF00' => 'Green',
-        ]
+        'default' => self::DEFAULT_COLOURS,
     ];
+
+
+    protected const DEFAULT_COLOURS = [
+        '#FF0000' => 'Red',
+        '#0000FF' => 'Blue',
+        '#00FF00' => 'Green',
+    ];
+
+
 
     /**
      * please set.
@@ -70,11 +76,131 @@ class DBColour extends Color
 
     private static $schema = 'default';
 
-    public function __construct($name = null, $schema = 'default', $options = [])
+    public function __construct($name = null, $schema = '', $options = [])
     {
-        $this->schema = $schema;
+        $this->schema = $schema ?: $name;
         parent::__construct($name, $options);
     }
+
+
+
+    public static function my_colours(string $name): array
+    {
+        return DBField::create_field(DBColour::class, $name)->getColours();
+    }
+
+    public static function get_swatches_field(string $name, string $value): LiteralField
+    {
+        return SelectedColourPickerFormFieldSwatches::get_swatches_field(
+            (string) $name,
+            (string) $value,
+            self::my_colours(($name)),
+            static::IS_BG_COLOUR
+        );
+    }
+
+    /**
+     *
+     * @param  string $name
+     * @param  string $title
+     * @return FormField
+     */
+    public static function get_dropdown_field(string $name, ?string $title = '')
+    {
+        $className = Config::inst()->get(DBColour::class, 'colour_picker_field_class_name');
+        return $className::create(
+            $name,
+            $title
+        )
+            ->setSource(self::my_colours($name))
+            ->setLimitedToOptions(static::IS_LIMITED_TO_OPTIONS)
+            ->setIsBgColour(static::IS_BG_COLOUR);
+        ;
+    }
+
+
+    public function get_colours_for_dropdown(?string $name = 'default'): ?array
+    {
+        $colours = self::my_colours($name);
+        if (!empty($colours)) {
+            $array = [];
+
+            foreach ($colours as $code => $label) {
+                $textColor = $this->getIsColorLight($code) ? '#000000' : '#FFFFFF';
+
+                $array[$code] = [
+                    'label' => $label,
+                    'background_css' => $code,
+                    'color_css' => $textColor,
+                    'sample_text' => 'Aa',
+                ];
+            }
+
+            return $array;
+        }
+        return null;
+    }
+
+
+    /**
+     * Detects if the given color is light
+     * @param string $colour HEX color code
+     */
+    public static function get_font_colour(?string $colour = ''): string
+    {
+        return self::is_light_colour((string) $colour) ? '#000000' : '#ffffff';
+    }
+
+    /**
+     * @param string $colour HEX color code
+     */
+    public static function is_dark_colour(?string $colour = ''): bool
+    {
+        return self::is_light_colour((string) $colour) ? false : true;
+    }
+
+    /**
+     * Detects if the given color is light
+     * @param string $colour HEX color code
+     */
+    public static function is_light_colour(?string $colour = ''): bool
+    {
+        if ($colour === 'transparent') {
+            return true;
+        }
+        $colourWithoutHash = str_replace('#', '', (string) $colour);
+        // Convert the color to its RGB values
+        $rgb = sscanf($colourWithoutHash, "%02x%02x%02x");
+        if (isset($rgb[0], $rgb[1], $rgb[2])) {
+            // Calculate the relative luminance of the color using the formula from the W3C
+            $luminance = 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
+
+            // If the luminance is greater than 50%, the color is considered light
+            return $luminance > 128;
+        }
+        return true;
+    }
+
+
+    public static function check_colour(?string $colour, ?bool $isBackgroundColour = false): string
+    {
+        $colour = strtolower($colour);
+        if($colour === 'transparent') {
+            return 'transparent';
+        }
+        if(! strpos($colour, '#')) {
+            $colour = '#' . $colour;
+        }
+        if(! $colour) {
+            if($isBackgroundColour) {
+                $colour = '#ffffff';
+            } else {
+                $colour = '#000000';
+            }
+        }
+        return $colour;
+    }
+
 
     public function CssClass(?bool $isTransparent = false): string
     {
@@ -83,7 +209,7 @@ class DBColour extends Color
 
     public function getCssClass(?bool $isTransparent = false): string
     {
-        $colous = $this->getColours();
+        $colours = $this->getColours();
         if($isTransparent) {
             $name = 'transparent';
         } else {
@@ -108,37 +234,6 @@ class DBColour extends Color
         return $this->classCleanup($name);
     }
 
-    public function scaffoldFormField($title = null, $params = null)
-    {
-        return static::get_dropdown_field($this->name, $title);
-    }
-
-    /**
-     *
-     * @param  string $name
-     * @param  string $title
-     * @return FormField
-     */
-    public static function get_dropdown_field(string $name, ?string $title = '')
-    {
-        $className = Config::inst()->get(DBColour::class, 'colour_picker_field_class_name');
-        return $className::create(
-            $name,
-            $title
-        )
-            ->setSource(static::COLOURS)
-            ->setLimitedToOptions(static::IS_LIMITED_TO_OPTIONS)
-            ->setIsBgColour(static::IS_BG_COLOUR);
-        ;
-        return $field;
-    }
-
-
-
-    public static function get_swatches_field(string $name, string $value): LiteralField
-    {
-        return SelectedColourPickerFormFieldSwatches::get_swatches_field((string) $name, (string) $value, static::COLOURS, static::IS_BG_COLOUR);
-    }
 
     public function ReadableColor(): string
     {
@@ -147,27 +242,7 @@ class DBColour extends Color
     public function getReadableColor(): string
     {
         // Remove '#' if it's present
-        $hexColor = ltrim((string) $this->value, '#');
-
-        // Check if the color is valid
-        if(strlen($hexColor) == 6) {
-            // Convert the color from hexadecimal to RGB
-            $r = hexdec(substr($hexColor, 0, 2)) / 255;
-            $g = hexdec(substr($hexColor, 2, 2)) / 255;
-            $b = hexdec(substr($hexColor, 4, 2)) / 255;
-
-            // Calculate the relative luminance
-            $luminance = 0.2126 * $r + 0.7152 * $g + 0.0722 * $b;
-
-            // Return either black or white, depending on the luminance
-            if($luminance > 0.5) {
-                return '#000000'; // Black color
-            } else {
-                return '#ffffff'; // White color
-            }
-        } else {
-            return false; // Invalid color
-        }
+        return $this->getFontColour();
     }
     private function classCleanup(string $name): string
     {
@@ -177,77 +252,9 @@ class DBColour extends Color
         return static::CSS_CLASS_PREFIX . '-' . trim(trim(strtolower($name), '-'));
     }
 
-    public static function my_colours_for_dropdown(): ?array
+    public function scaffoldFormField($title = null, $params = null)
     {
-        if ($colours = self::my_colours()) {
-            $array = [];
-
-            foreach ($colours as $code => $label) {
-                $textColor = Helper::isColorLight($code) ? '#000' : '#FFF';
-
-                $array[$code] = [
-                    'label' => $label,
-                    'background_css' => $code,
-                    'color_css' => $textColor,
-                    'sample_text' => 'Aa',
-                ];
-            }
-
-            return $array;
-        }
-        return null;
-    }
-
-
-    /**
-     * Detects if the given color is light
-     * @param string $colour HEX color code
-     */
-    public static function fontColour($colour): string
-    {
-        return self::isColorLight((string) $colour) ? '#000000' : '#ffffff';
-    }
-    /**
-     * @param string $colour HEX color code
-     */
-    public static function isDarkColour($colour): bool
-    {
-        return self::isColorLight((string) $colour) ? false : true;
-    }
-
-    /**
-     * Detects if the given color is light
-     * @param string $colour HEX color code
-     */
-    public static function isColorLight($colour): bool
-    {
-        if ($colour === 'transparent') {
-            return true;
-        }
-        $colourWithoutHash = str_replace('#', '', (string) $colour);
-        // Convert the color to its RGB values
-        $rgb = sscanf($colourWithoutHash, "%02x%02x%02x");
-        if (isset($rgb[0], $rgb[1], $rgb[2])) {
-            // Calculate the relative luminance of the color using the formula from the W3C
-            $luminance = 0.2126 * $rgb[0] + 0.7152 * $rgb[1] + 0.0722 * $rgb[2];
-
-            // If the luminance is greater than 50%, the color is considered light
-            return $luminance > 128;
-        }
-        return true;
-    }
-
-
-    protected static function check_colour(?string $colour, ?bool $isBackgroundColour = false): string
-    {
-        if(! $colour || strlen($colour) !== 7) {
-            if($isBackgroundColour) {
-                $colour = '#ffffff';
-            } else {
-                $colour = '#000000';
-            }
-        }
-        return $colour;
+        return static::get_dropdown_field($this->name, $title);
     }
 
     protected function getColours(): array
@@ -259,27 +266,11 @@ class DBColour extends Color
     {
         $colours = $this->getColours();
 
-        return $colours[$this->schema] ?? $colours[$this->schema];
+        return $colours[$this->schema] ?? $colours['default'] ?? self::DEFAULT_COLOURS;
     }
 
-}
 
-//
-// public static function get_dropdown_field_old(?string $name = 'TextColour', ?string $title = 'Text Colour'): SelectedColourPickerFormField
-// {
-//     $field = SelectedColourPickerFormField::create(
-//         $name,
-//         $title,
-//         static::COLOURS
-//     );
-//     $js = '
-//         jQuery("#TextAndBackgroudColourExample").css("color", jQuery(this).val());
-//     ';
-//     $field->setAttribute('onchange', $js);
-//     $field->setAttribute('onhover', $js);
-//     $field->setAttribute('onclick', $js);
-//     $field->setAttribute('onfocus', $js);
-//
-//     return $field;
-// }
-//
+
+
+
+}

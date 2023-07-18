@@ -7,6 +7,7 @@ use SilverStripe\Forms\LiteralField;
 use SilverStripe\View\ViewableData;
 
 use SilverStripe\ORM\FieldType\DBField;
+use Sunnysideup\SelectedColourPicker\Model\Fields\DBColour;
 
 class SelectedColourPickerFormFieldSwatches extends ViewableData
 {
@@ -83,7 +84,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
 
     protected static function get_swatches_field_inner(string $value, array $colours, bool $isBackgroundColour): array
     {
-        $value = self::check_colour($value, $isBackgroundColour);
+        $value = DBColour::check_colour($value, $isBackgroundColour);
         $ids = [];
         foreach ($colours as $colour => $name) {
             $invertColour = self::hex_invert($colour);
@@ -114,21 +115,4 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
         return $ids;
     }
 
-    protected static function check_colour(?string $colour, ?bool $isBackgroundColour = false) : string
-    {
-        if(! $colour || strlen($colour) !== 7) {
-            if($isBackgroundColour) {
-                $colour = '#ffffff';
-            } else {
-                $colour = '#000000';
-            }
-        }
-        return $colour;
-    }
 }
-
-// <span
-//     class="color-cms"
-//     style="display: inline-block; vertical-align: bottom; width: 20px; height: 20px; border-radius: 10px; background-color: '.$this->value.'"
-// >
-// </span>
