@@ -6,7 +6,7 @@ Here is how to add a colour to a DataObject:
 
     private static $db = [
         'MyColour' => 'Colour',
-        'MyColour2' => 'BackgroundColor',
+        'MyColour2' => 'BackgroundColour',
         'MyColour2' => 'FontColour',
         'MyColour2' => 'DifferentDBColourSchema',
     ]
@@ -36,7 +36,7 @@ Sunnysideup\SelectedColourPicker\Model\Fields\DBColour:
 
 ```ss
 
-<div style="background-color: $MyColour; color: $MyColour.ReadableColor" style="$MyColour.CssClass">
+<div style="background-color: $MyColour; color: $MyColour.ReadableColour" style="$MyColour.CssClass">
 
 <br /><% if $MyColour.IsDarkColour %>Is Dark Colour <% end_if %>
 <br /><% if $MyColour.IsLightColour %>Is Light Colour <% end_if %>

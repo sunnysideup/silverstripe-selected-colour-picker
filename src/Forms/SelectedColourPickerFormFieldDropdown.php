@@ -12,7 +12,6 @@ use SilverStripe\Forms\DropdownField;
 
 class SelectedColourPickerFormFieldDropdown extends DropdownField
 {
-
     public function setLimitedToOptions(bool $bool)
     {
         $this->limitedToOptions = $bool;
@@ -67,9 +66,3 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
     }
 
 }
-
-// <span
-//     class="color-cms"
-//     style="display: inline-block; vertical-align: bottom; width: 20px; height: 20px; border-radius: 10px; background-color: '.$this->value.'"
-// >
-// </span>

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sunnysideup\SelectedColourPicker\Model\Fields\DBColour;
+namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
 use Fromholdio\ColorPalette\Fields\ColorPaletteField;
 use SilverStripe\Forms\FormField;
@@ -112,7 +112,7 @@ class DBColour extends Color
         return SelectedColourPickerFormFieldSwatches::get_swatches_field(
             (string) $name,
             (string) $value,
-            self::my_colours(($name)),
+            self::my_colours(),
             static::IS_BG_COLOUR
         );
     }
@@ -225,7 +225,7 @@ class DBColour extends Color
 
     public function scaffoldFormField($title = null, $params = null)
     {
-        return ColorPaletteField::create($this->name, $title, self::get_colours_for_dropdown());
+        return ColorPaletteField::create($this->name, $title, static::get_colours_for_dropdown());
     }
 
 
