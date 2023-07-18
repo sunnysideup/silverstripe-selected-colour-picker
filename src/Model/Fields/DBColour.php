@@ -150,7 +150,7 @@ class DBColour extends Color
             $array = [];
 
             foreach ($colours as $code => $label) {
-                $textcolour = static::get_font_colour($code) ;
+                $textcolour = static::get_font_colour((string) $code) ;
                 if($isBackgroundColour) {
                     $array[$code] = [
                         'label' => $label,
@@ -179,8 +179,11 @@ class DBColour extends Color
      * Detects if the given colour is light
      * @param string $colour HEX colour code
      */
-    public static function get_font_colour(string $colour, ?string $name = '')
+    public static function get_font_colour(?string $colour = null, ?string $name = '')
     {
+        if(! $colour) {
+            $colour = '#ffffff';
+        }
         $colour = static::is_light_colour((string) $colour) ? '#000000' : '#ffffff';
         return static::get_colour_as_db_field($colour, $name);
     }
