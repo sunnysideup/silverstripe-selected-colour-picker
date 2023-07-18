@@ -6,6 +6,8 @@ Here is how to add a colour to a DataObject:
 
     private static $db = [
         'MyColour' => 'Colour',
+        'MyColour2' => 'BackgroundColor',
+        'MyColour2' => 'FontColour',
         'MyColour2' => 'DifferentDBColourSchema',
     ]
 
@@ -15,14 +17,19 @@ Here is how to add a colour to a DataObject:
 
 ```yml
 Sunnysideup\SelectedColourPicker\Model\Fields\DBColour:
+  # REQUIRED
   colours:
     '#ff2233': 'Brand Colour 1'
     '#88aadd': 'Brand Colour 2'
+
+  # OPTIONAL!
   linked_colours:
     '#ff2233': 
       'font': '#123312',
       'background': '#775544',
       'somethingelse': '#000000',
+  # OPTIONAL!
+  colour_picker_field_class_name: MyColourSelectionField
 ```
 
 ### Usage in SilverStripe template

@@ -104,7 +104,7 @@ class DBColour extends Color
         return '--' . $this->getName() . ': ' . $this->getValue() . ';';
     }
 
-    public static function my_colours(string $name): array
+    public static function my_colours(): array
     {
         return self::get_colour_as_db_field(DBColour::class)->getColours();
     }
@@ -142,17 +142,17 @@ class DBColour extends Color
     }
 
 
-    public function get_colours_for_dropdown(?string $name = 'default', ?bool $isBackgroundColour = null): ?array
+    public static function get_colours_for_dropdown(?bool $isBackgroundColour = null): ?array
     {
         if($isBackgroundColour === null) {
             $isBackgroundColour = static::IS_BG_COLOUR;
         }
-        $colours = self::my_colours($name);
+        $colours = self::my_colours();
         if (!empty($colours)) {
             $array = [];
 
             foreach ($colours as $code => $label) {
-                $textColor = $this->getIsColorLight($code) ? '#000000' : '#FFFFFF';
+                $textColor = self::get_font_colour($code) ;
                 if($isBackgroundColour) {
                     $array[$code] = [
                         'label' => $label,
