@@ -83,11 +83,11 @@ class DBColour extends Color
 
     private static $casting = [
         // related colours
-        'Readablecolour' => 'Varchar',
+        'ReadableColour' => 'Varchar',
         'RelatedColourByName' => 'Varchar',
         'Inverted' => 'Varchar',
         // css
-        'CssVariableDefinition' => 'Varchar',
+        'CssVariableDefinition' => 'HTMLText',
         'CssClass' => 'Varchar',
         'CssClassAlternative' => 'Boolean',
         // booleans
@@ -104,7 +104,7 @@ class DBColour extends Color
 
     public static function my_colours(): array
     {
-        return static::get_colour_as_db_field(DBColour::class)->getColours();
+        return static::get_colour_as_db_field('')->getColours();
     }
 
     public static function get_swatches_field(string $name, string $value): LiteralField
@@ -179,10 +179,10 @@ class DBColour extends Color
      * Detects if the given colour is light
      * @param string $colour HEX colour code
      */
-    public static function get_font_colour(?string $colour = '')
+    public static function get_font_colour(string $colour, ?string $name = '')
     {
         $colour = static::is_light_colour((string) $colour) ? '#000000' : '#ffffff';
-        return static::get_colour_as_db_field($colour);
+        return static::get_colour_as_db_field($colour, $name);
     }
 
     /**
@@ -229,10 +229,10 @@ class DBColour extends Color
     }
 
 
-    public function getReadablecolour(): static
+    public function getReadableColour(): static
     {
         // Remove '#' if it's present
-        return static::get_font_colour($this->value);
+        return static::get_font_colour($this->value, $this->name);
     }
 
     public function Inverted(): static
@@ -252,26 +252,46 @@ class DBColour extends Color
         // Ensure the colour is 6 characters long
         $colour = str_pad($colour, 6, '0', STR_PAD_LEFT);
 
-        return static::get_colour_as_db_field($colour);
+        return static::get_colour_as_db_field($colour, $this->name);
     }
 
-    public function getRelatedColourByName(string $name): static
+    public function getRelatedColourByName(string $relatedName): static
     {
-        $colours = Config::inst()->get(static::class, 'linked_colours');
-        $colour = $colours($this->value)[$name] ?? 'error';
-        return static::get_colour_as_db_field($colour);
+        $relatedColours = $this->getRelatedColours($this->value);
+        $colour = $relatedColours[$relatedName] ?? 'error';
+        return static::get_colour_as_db_field($colour, $this->name);
     }
+
 
     public function getCssVariableDefinition($rootElement = ':root'): string
     {
-        $style = PHP_EOL.$rootElement . '{';
-        $style .= PHP_EOL. '--colour-' . strtolower($this->getName()) . ': ' . $this->getValue() . ';';
+        $style = PHP_EOL . '<style>';
+        $style .= PHP_EOL.$rootElement;
+        $style .= PHP_EOL. '{';
+        $style .= $this->getCssVarLine();
         if(static::IS_BG_COLOUR) {
-            $readableColour = $this->getReadablecolour();
-            $style .= PHP_EOL. '--colour-font-' . strtolower($readableColour->getName()) . ': ' . $readableColour->getValue() . ';';
+            $readableColourObj = $this->getReadableColour();
+            $style .= $readableColourObj->getCssVarLine('font');
         }
-        $style = PHP_EOL . '}';
+        foreach($this->getRelatedColours() as $name => $relatedColour) {
+            $relatedColourObj = self::get_colour_as_db_field($relatedColour, $this->name);
+            $style .= $relatedColourObj->getCssVarLine($name);
+            $relatedColourObjReadable = $relatedColourObj->getReadableColour();
+            $style .= $relatedColourObjReadable->getCssVarLine($name.'-font');
+        }
+        $style .= PHP_EOL . '}';
+        $style .= PHP_EOL . '</style>';
+
         return $style;
+    }
+
+    public function getCssVarLine($name = ''): string
+    {
+        $start = '    --colour';
+        if($name) {
+            $start .= '-' . strtolower($name);
+        }
+        return PHP_EOL. $start.'-' . strtolower($this->getName()) . ': ' . $this->getValue() . ';';
     }
 
     public function getCssClass(?bool $isTransparent = false): string
@@ -330,18 +350,22 @@ class DBColour extends Color
         return empty($colours) ? static::DEFAULT_COLOURS : $colours;
     }
 
-
-    protected static $object_cache = [];
-
-    protected static function get_colour_as_db_field(string $colour)
+    protected function getRelatedColours(): array
     {
-        if(! isset(static::$object_cache[$colour])) {
-            static::$object_cache[$colour] = DBField::create_field(static::class, $colour);
-        }
-        return static::$object_cache[$colour];
+        $relatedColoursForAllColours = Config::inst()->get(static::class, 'linked_colours');
+        return $relatedColoursForAllColours[$this->value] ?? [];
     }
 
 
+    protected static $object_cache = [];
+
+    protected static function get_colour_as_db_field(string $colour, ?string $name = '')
+    {
+        if(! isset(static::$object_cache[$colour])) {
+            static::$object_cache[$colour] = DBField::create_field(static::class, $colour, $name);
+        }
+        return static::$object_cache[$colour];
+    }
 
 
 }
