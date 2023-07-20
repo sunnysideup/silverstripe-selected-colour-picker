@@ -53,6 +53,12 @@ MyColour.CssVariableDefinition
 
 ### customisation
 
+```yml
+SilverStripe\Core\Injector\Injector:
+  MyColour:
+    class: MyName\MyApp\Model\Fields\DifferentDBColourSchema
+```
+
 ```php
 class DifferentDBColourSchema extends DBColour
 {
