@@ -59,31 +59,12 @@ SilverStripe\Core\Injector\Injector:
     class: MyName\MyApp\Model\Fields\DifferentDBColourSchema
 ```
 
+In PHP you can then add different approaches.
+
 ```php
 class DifferentDBColourSchema extends DBColour
 {
     private static $colour_picker_field_class_name = MyFormField::class;
-
-    protected const DEFAULT_COLOURS = [
-        '#FF0000' => 'Red',
-        '#0000FF' => 'Blue',
-        '#00FF00' => 'Green',
-    ];
-
-
-    /**
-     * please set.
-     *
-     * @var string`
-     */
-    protected const CSS_CLASS_PREFIX = 'db-colour';
-
-    /**
-     * please set.
-     *
-     * @var bool
-     */
-    protected const IS_LIMITED_TO_OPTIONS = true;
 
     /**
      * please set.
