@@ -364,10 +364,11 @@ class DBColour extends Color
 
     protected static function get_colour_as_db_field(string $colour, ?string $name = '')
     {
-        if(!$colour || ! isset(static::$object_cache[$colour])) {
-            static::$object_cache[$colour] = DBField::create_field(static::class, $colour, $name);
+        $cacheKey = $colour . '_'.  $name . '_'. static::class;
+        if(!$colour || ! isset(static::$object_cache[$cacheKey])) {
+            static::$object_cache[$cacheKey] = DBField::create_field(static::class, $colour, $name);
         }
-        return static::$object_cache[$colour];
+        return static::$object_cache[$cacheKey];
     }
 
 
