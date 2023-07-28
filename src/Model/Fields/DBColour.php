@@ -83,6 +83,8 @@ class DBColour extends Color
 
     private static $casting = [
         // related colours
+        'FontColour' => 'Varchar',
+        'BackgroundColour' => 'Varchar',
         'ReadableColour' => 'Varchar',
         'RelatedColourByName' => 'Varchar',
         'Inverted' => 'Varchar',
@@ -93,6 +95,7 @@ class DBColour extends Color
         // booleans
         'IsDarkColour' => 'Boolean',
         'IsLightColour' => 'Boolean',
+
         'Nice' => 'HTMLText',
     ];
 
