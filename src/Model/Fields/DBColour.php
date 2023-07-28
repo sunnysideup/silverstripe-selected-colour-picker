@@ -93,6 +93,7 @@ class DBColour extends Color
         // booleans
         'IsDarkColour' => 'Boolean',
         'IsLightColour' => 'Boolean',
+        'Nice' => 'HTMLText',
     ];
 
 
@@ -323,6 +324,19 @@ class DBColour extends Color
     public function getIsLightColour(): bool
     {
         return static::is_light_colour($this->value);
+    }
+
+    public function getNice(): string
+    {
+        return '
+            <div
+            style="
+                width: 20px;
+                heigh: 20px;
+                border-radius: 50%;
+                background-color: ' . $this->value . ';
+                color: ; '.self::get_font_colour($this->value).'"
+            >Aa</div> ';
     }
 
     public function getIsDarkColour(): bool
