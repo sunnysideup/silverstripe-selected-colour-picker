@@ -326,17 +326,25 @@ class DBColour extends Color
         return static::is_light_colour($this->value);
     }
 
-    public function getNice(): string
+    public function getNice()
     {
-        return '
+        $html = '
             <div
             style="
-                width: 20px;
-                heigh: 20px;
-                border-radius: 50%;
-                background-color: ' . $this->value . ';
-                color: ; '.self::get_font_colour($this->value).'"
+                width: 40px;
+                height: 40px;
+                border-radius: 40px;
+                background-color: ' . $this->getBackgroundColour() . '!important;
+                color: '.$this->getFontColour().'!important;
+                border: 1px solid '.$this->getFontColour().'!important;
+                text-align: center;
+                display: table-cell;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            "
             >Aa</div> ';
+        return DBField::create_field('HTMLText', $html);
     }
 
     public function getIsDarkColour(): bool
@@ -383,6 +391,24 @@ class DBColour extends Color
             static::$object_cache[$cacheKey] = DBField::create_field(static::class, $colour, $name);
         }
         return static::$object_cache[$cacheKey];
+    }
+
+    public function getFontColour(): string
+    {
+        if(self::IS_BG_COLOUR) {
+            return (string) self::get_font_colour($this->value);
+        } else {
+            return (string) $this->value;
+        }
+    }
+
+    public function getBackgroundColour(): string
+    {
+        if(self::IS_BG_COLOUR) {
+            return (string) $this->value;
+        } else {
+            return (string) self::get_font_colour($this->value);
+        }
     }
 
 

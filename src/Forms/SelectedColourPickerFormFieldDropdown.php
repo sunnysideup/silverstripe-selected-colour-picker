@@ -57,7 +57,7 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
                     $this->name,
                     $this->value,
                     $this->getListMap($this->source),
-                    $this->isBgColour
+                    (bool) $this->isBgColour
                 )
             )
         );
