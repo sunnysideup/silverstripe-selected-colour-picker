@@ -7,8 +7,8 @@ Here is how to add a colour to a DataObject:
     private static $db = [
         'MyColour' => 'Colour',
         'MyColour2' => 'BackgroundColour',
-        'MyColour2' => 'FontColour',
-        'MyColour2' => 'DifferentDBColourSchema',
+        'MyColour3' => 'FontColour',
+        'MyColour4' => 'DifferentDBColourSchema',
     ]
 
 ```
