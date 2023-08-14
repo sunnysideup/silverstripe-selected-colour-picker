@@ -2,6 +2,7 @@
 
 namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
+use BimTheBam\NativeColorInput\Form\Field\ColorField;
 use Fromholdio\ColorPalette\Fields\ColorPaletteField;
 use SilverStripe\Forms\FormField;
 use SilverStripe\Forms\LiteralField;
@@ -232,7 +233,12 @@ class DBColour extends Color
 
     public function scaffoldFormField($title = null, $params = null)
     {
-        return ColorPaletteField::create($this->name, $title, static::get_colours_for_dropdown());
+        $array = static::get_colours_for_dropdown();
+        if(empty($array)) {
+            return ColorField::create($this->name, $title);
+        } else {
+            return ColorPaletteField::create($this->name, $title, static::get_colours_for_dropdown());
+        }
     }
 
 
@@ -270,7 +276,7 @@ class DBColour extends Color
     }
 
 
-    public function getCssVariableDefinition($rootElement = ':root'): string
+    public function getCssVariableDefinition(?string $rootElement = ':root'): string
     {
         $style = PHP_EOL . '<style>';
         $style .= PHP_EOL.$rootElement;
@@ -278,7 +284,7 @@ class DBColour extends Color
         $style .= $this->getCssVarLine();
         if(static::IS_BG_COLOUR) {
             $readableColourObj = $this->getReadableColour();
-            $style .= $readableColourObj->getCssVarLine('font');
+            $style .= $readableColourObj->getCssVarLine('-font');
         }
         foreach($this->getRelatedColours() as $name => $relatedColour) {
             $relatedColourObj = self::get_colour_as_db_field($relatedColour, $this->name);
@@ -292,13 +298,11 @@ class DBColour extends Color
         return $style;
     }
 
-    public function getCssVarLine($name = ''): string
+    public function getCssVarLine(?string $name = '', ?string $prefix = '--colour-'): string
     {
-        $start = '    --colour';
-        if($name) {
-            $start .= '-' . strtolower($name);
-        }
-        return PHP_EOL. $start.'-' . strtolower($this->getName()) . ': ' . $this->getValue() . ';';
+        $variableName = '    '.$prefix;
+        $variableName .= $name ?: $this->kebabCase($this->getName());
+        return PHP_EOL. $variableName . ': ' . $this->getValue() . ';';
     }
 
     public function getCssClass(?bool $isTransparent = false): string
@@ -414,5 +418,10 @@ class DBColour extends Color
         }
     }
 
+
+    protected function kebabCase(string $string)
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $string));
+    }
 
 }
