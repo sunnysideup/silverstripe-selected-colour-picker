@@ -4,9 +4,8 @@ namespace Sunnysideup\SelectedColourPicker\ViewableData;
 
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
-use SilverStripe\View\ViewableData;
-
 use SilverStripe\ORM\FieldType\DBField;
+use SilverStripe\View\ViewableData;
 use Sunnysideup\SelectedColourPicker\Model\Fields\DBColour;
 
 class SelectedColourPickerFormFieldSwatches extends ViewableData
@@ -21,8 +20,8 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
 
     public static function colour_and_background_swatch(string $colour, string $bgColour, ?bool $asHTML = true)
     {
-        $html = '<span style="color: '.$colour.'!important; background-color: '.$bgColour.'!important; padding: 4px; width: auto; text-align: center; border-radius: 4px; display: inline-block;">example</span>';
-        if($asHTML) {
+        $html = '<span style="color: ' . $colour . '!important; background-color: ' . $bgColour . '!important; padding: 4px; width: auto; text-align: center; border-radius: 4px; display: inline-block;">example</span>';
+        if ($asHTML) {
             return DBField::create_field('HTMLText', $html);
         }
     }
@@ -36,7 +35,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
         return '
             <div class="field ' . $name . '-class">
                 <p>
-                    Current Value: ' . ($colours[$value] ?? $value) . ', '.$value.'
+                    Current Value: ' . ($colours[$value] ?? $value) . ', ' . $value . '
                     <a onclick="' . $js . '" style="cursor: pointer;"><u>show available colours</u></a>
                 </p>
                 <div style="display: none" id="' . $id . '">' . implode('', $options) . '<hr style="clear: both; " /></div>
@@ -114,5 +113,4 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
 
         return $ids;
     }
-
 }

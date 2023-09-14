@@ -3,11 +3,11 @@
 namespace Sunnysideup\SelectedColourPicker\Forms;
 
 use SilverStripe\Forms\TextField;
+use SilverStripe\Forms\Validator;
 use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\FieldType\DBField;
 use SilverStripe\View\ArrayData;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
-use SilverStripe\Forms\Validator;
 
 class SelectedColourPickerFormField extends TextField
 {
