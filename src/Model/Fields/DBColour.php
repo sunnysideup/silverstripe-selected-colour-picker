@@ -370,7 +370,7 @@ class DBColour extends Color
 
 
 
-    protected function getColours(): array
+    public function getColours(): array
     {
         return $this->Config()->get('colours');
     }
