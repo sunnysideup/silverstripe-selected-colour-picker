@@ -10,6 +10,4 @@ class DBBackgroundColour extends DBColour
      * @var bool
      */
     protected const IS_BG_COLOUR = true;
-
-
 }

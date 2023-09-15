@@ -2,13 +2,10 @@
 
 namespace Sunnysideup\SelectedColourPicker\Forms;
 
-use SilverStripe\Forms\TextField;
-use SilverStripe\ORM\ArrayList;
-use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\View\ArrayData;
-use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
-use SilverStripe\Forms\Validator;
 use SilverStripe\Forms\DropdownField;
+use SilverStripe\Forms\Validator;
+use SilverStripe\ORM\FieldType\DBField;
+use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 
 class SelectedColourPickerFormFieldDropdown extends DropdownField
 {
@@ -64,5 +61,4 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
 
         return parent::Field();
     }
-
 }
