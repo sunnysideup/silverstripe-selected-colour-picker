@@ -9,6 +9,11 @@ use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldS
 
 class SelectedColourPickerFormFieldDropdown extends DropdownField
 {
+
+    protected $limitedToOptions = true;
+
+    protected $isBgColour = true;
+
     public function setLimitedToOptions(bool $bool)
     {
         $this->limitedToOptions = $bool;
