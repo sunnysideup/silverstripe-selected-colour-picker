@@ -78,8 +78,7 @@ class DBColour extends Color
      *
      * @var array
      */
-    private static $linked_colours = [
-    ];
+    private static $linked_colours = [];
 
     private static $casting = [
         // related colours
@@ -299,7 +298,6 @@ class DBColour extends Color
     {
         $variableName = '    ' . $prefix;
         $variableName .= $name ?: $this->kebabCase($this->getName());
-
         return PHP_EOL . $variableName . ': ' . $this->getValue() . ';';
     }
 
