@@ -15,6 +15,8 @@ use TractorCow\Colorpicker\Color;
 class DBColour extends Color
 {
     protected const DEFAULT_COLOURS = [
+        '#FFFFFF' => 'White',
+        '#000000' => 'Black',
         '#FF0000' => 'Red',
         '#0000FF' => 'Blue',
         '#00FF00' => 'Green',
@@ -51,7 +53,7 @@ class DBColour extends Color
      * ```php
      *     [
      *         '#fff000' => 'My Colour 1',
-     *         '#fff000' => 'My Colour 2',
+     *         '#00f011' => 'My Colour 2',
      *     ].
      *
      * ```
@@ -179,7 +181,7 @@ class DBColour extends Color
      *
      * @param string $colour HEX colour code
      */
-    public static function get_font_colour(?string $colour = null, ?string $name = '')
+    public static function get_font_colour(?string $colour = null, ?string $name = ''): DBColour
     {
         if (! $colour) {
             $colour = '#ffffff';
@@ -266,7 +268,7 @@ class DBColour extends Color
 
     public function getRelatedColourByName(string $relatedName): static
     {
-        $relatedColours = $this->getRelatedColours($this->value);
+        $relatedColours = $this->getRelatedColours();
         $colour = $relatedColours[$relatedName] ?? 'error';
 
         return static::get_colour_as_db_field($colour, $this->name);
@@ -386,14 +388,14 @@ class DBColour extends Color
         return empty($colours) ? static::DEFAULT_COLOURS : $colours;
     }
 
-    protected function getRelatedColours(): array
+    protected function getRelatedColours(?string $colour = null): array
     {
         $relatedColoursForAllColours = Config::inst()->get(static::class, 'linked_colours');
 
-        return $relatedColoursForAllColours[$this->value] ?? [];
+        return $relatedColoursForAllColours[$colour ?: $this->value] ?? [];
     }
 
-    protected static function get_colour_as_db_field(string $colour, ?string $name = '')
+    protected static function get_colour_as_db_field(string $colour, ?string $name = ''): static
     {
         $cacheKey = $colour . '_' . $name . '_' . static::class;
         if (! $colour || ! isset(static::$object_cache[$cacheKey])) {
