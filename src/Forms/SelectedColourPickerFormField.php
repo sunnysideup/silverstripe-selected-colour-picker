@@ -19,21 +19,21 @@ class SelectedColourPickerFormField extends TextField
 
     protected $isBgColour = true;
 
-    public function setOptions(array $array)
+    public function setOptions(array $array): static
     {
         $this->source = $array;
 
         return $this;
     }
 
-    public function setLimitedToOptions(bool $bool)
+    public function setLimitedToOptions(bool $bool): static
     {
         $this->limitedToOptions = $bool;
 
         return $this;
     }
 
-    public function setIsBgColour(bool $bool)
+    public function setIsBgColour(bool $bool): static
     {
         $this->isBgColour = $bool;
 
@@ -47,7 +47,7 @@ class SelectedColourPickerFormField extends TextField
      *
      * @return bool
      */
-    public function validate($validator)
+    public function validate($validator): bool
     {
         if ($this->limitedToOptions && $this->value && ! isset($this->source[$this->value])) {
             $validator->validationError(

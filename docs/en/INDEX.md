@@ -25,9 +25,9 @@ Sunnysideup\SelectedColourPicker\Model\Fields\DBColour:
   # OPTIONAL!
   linked_colours:
     '#ff2233': 
-      'font': '#123312',
-      'background': '#775544',
-      'somethingelse': '#000000',
+      'font': '#123312'
+      'background': '#775544'
+      'somethingelse': '#000000'
   # OPTIONAL!
   colour_picker_field_class_name: MyColourSelectionField
 ```
@@ -74,3 +74,5 @@ class DifferentDBColourSchema extends DBColour
     protected const IS_BG_COLOUR = true;
 }
 ```
+
+
