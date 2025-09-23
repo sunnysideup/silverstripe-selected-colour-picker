@@ -157,14 +157,14 @@ class DBColour extends Color
                     $array[$code] = [
                         'label' => $label,
                         'background_css' => $code,
-                        'colour_css' => $textcolour,
+                        'color_css' => null,
                         'sample_text' => 'Aa',
                     ];
                 } else {
                     $array[$code] = [
                         'label' => $label,
                         'background_css' => $textcolour,
-                        'colour_css' => $code,
+                        'color_css' => $code,
                         'sample_text' => 'Aa',
                     ];
                 }
