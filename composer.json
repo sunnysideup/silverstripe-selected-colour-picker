@@ -16,7 +16,7 @@
   "type": "silverstripe-vendormodule",
   "require": {
     "silverstripe/framework": "^4.0 || ^5.0",
-    "heyday/silverstripe-colorpalette": "dev-main",
+    "fromholdio/silverstripe-colorpalette": "dev-master",
     "tractorcow/silverstripe-colorpicker": "^4.1",
     "bimthebam/silverstripe-native-color-input": "^1.0"
   },
