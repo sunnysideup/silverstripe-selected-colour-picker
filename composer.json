@@ -39,5 +39,11 @@
     "psr-4": {
       "Sunnysideup\\SelectedColourPicker\\": "src/"
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:sunnysideup/silverstripe-colorpalette.git"
+    }
+  ]
 }
