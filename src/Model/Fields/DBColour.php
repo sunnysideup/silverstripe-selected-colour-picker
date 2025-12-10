@@ -282,7 +282,7 @@ class DBColour extends Color
         $style .= $this->getCssVarLine();
         if (static::IS_BG_COLOUR) {
             $readableColourObj = $this->getReadableColour();
-            $style .= $readableColourObj->getCssVarLine('-font');
+            $style .= $readableColourObj->getCssVarLine($this->kebabCase($this->getName()) . '-font');
         }
         foreach ($this->getRelatedColours() as $name => $relatedColour) {
             $relatedColourObj = self::get_colour_as_db_field($relatedColour, $this->name);
