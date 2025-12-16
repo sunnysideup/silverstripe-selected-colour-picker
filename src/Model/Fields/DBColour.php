@@ -206,25 +206,25 @@ class DBColour extends Color
      */
     public static function is_light_colour(?string $colour = ''): bool
     {
-        return static::get_colour_as_db_field($colour)
+        return static::get_colour_as_db_field((string) $colour)
             ->Luminance() > 0.5;
     }
 
     public static function check_colour(?string $colour, ?bool $isBackgroundColour = false): string
     {
-        $colour = strtolower($colour);
-        if ('transparent' === $colour) {
-            return 'transparent';
-        }
-        if (! strpos($colour, '#')) {
-            $colour = '#' . $colour;
-        }
         if (! $colour) {
             if ($isBackgroundColour) {
                 $colour = '#ffffff';
             } else {
                 $colour = '#000000';
             }
+        }
+        $colour = strtolower((string) $colour);
+        if ('transparent' === $colour) {
+            return 'transparent';
+        }
+        if (! strpos((string) $colour, '#')) {
+            $colour = '#' . $colour;
         }
 
         return $colour;
