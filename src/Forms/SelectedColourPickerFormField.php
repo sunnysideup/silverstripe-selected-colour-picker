@@ -44,8 +44,6 @@ class SelectedColourPickerFormField extends TextField
      * Validate this field.
      *
      * @param Validator $validator
-     *
-     * @return bool
      */
     public function validate($validator): bool
     {

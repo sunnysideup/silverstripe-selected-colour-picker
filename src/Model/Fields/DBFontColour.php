@@ -10,6 +10,7 @@ class DBFontColour extends DBColour
      * @var bool
      */
     protected const IS_BG_COLOUR = false;
+
     public static function get_colours_for_dropdown(?bool $isBackgroundColour = null): ?array
     {
         return parent::get_colours_for_dropdown(false);

@@ -28,7 +28,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
 
     public static function get_swatches_html(string $name, ?string $value, array $colours, bool $isBackgroundColour): string
     {
-        $options = static::get_swatches_field_inner((string) $value, (array) $colours, (bool) $isBackgroundColour);
+        $options = static::get_swatches_field_inner((string) $value, $colours, $isBackgroundColour);
         $id = $name . rand(0, 99999999999);
         $js = Convert::raw2att('document.querySelector("#' . $id . '").style.display="block";');
 
