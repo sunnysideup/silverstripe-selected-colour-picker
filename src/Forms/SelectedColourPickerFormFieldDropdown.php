@@ -2,8 +2,10 @@
 
 namespace Sunnysideup\SelectedColourPicker\Forms;
 
+use Override;
+use SilverStripe\Forms\Validation\Validator;
+use SilverStripe\Core\Validation\ValidationResult;
 use SilverStripe\Forms\DropdownField;
-use SilverStripe\Forms\Validator;
 use SilverStripe\ORM\FieldType\DBField;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 
@@ -34,11 +36,11 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
      *
      * @return bool
      */
-    public function validate($validator)
+    #[Override]
+    public function validate(): ValidationResult
     {
         if ($this->limitedToOptions && $this->value && ! isset($this->source[$this->value])) {
-            $validator->validationError(
-                $this->name,
+            $valid->addError(
                 'Please selected from suggested options only',
                 'validation'
             );
@@ -49,6 +51,7 @@ class SelectedColourPickerFormFieldDropdown extends DropdownField
         return true;
     }
 
+    #[Override]
     public function Field($properties = [])
     {
         $this->setDescription(
