@@ -80,15 +80,13 @@ class SelectedColourPickerFormField extends TextField
 
     public function ColourOptionsAsArrayList(): ArrayList
     {
-        $al = new ArrayList();
+        $al = ArrayList::create();
         foreach ($this->source as $colour => $label) {
             $al->push(
-                new ArrayData(
-                    [
-                        'Colour' => $colour,
-                        'Label' => $label,
-                    ]
-                )
+                ArrayData::create([
+                    'Colour' => $colour,
+                    'Label' => $label,
+                ])
             );
         }
 

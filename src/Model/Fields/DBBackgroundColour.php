@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
 class DBBackgroundColour extends DBColour

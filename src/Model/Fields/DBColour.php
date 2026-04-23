@@ -124,6 +124,7 @@ class DBColour extends Color
         if (null === $isBackgroundColour) {
             $isBackgroundColour = static::IS_BG_COLOUR;
         }
+
         $className = Config::inst()->get(static::class, 'colour_picker_field_class_name');
 
         return $className::create(
@@ -141,6 +142,7 @@ class DBColour extends Color
         if (null === $isBackgroundColour) {
             $isBackgroundColour = static::IS_BG_COLOUR;
         }
+
         $colours = static::my_colours();
         if ($colours !== []) {
             $array = [];
@@ -180,6 +182,7 @@ class DBColour extends Color
         if (! $colour) {
             $colour = '#ffffff';
         }
+
         $colour = static::is_light_colour($colour) ? '#000000' : '#ffffff';
 
         return static::get_colour_as_db_field($colour, $name);
@@ -209,10 +212,12 @@ class DBColour extends Color
         if (! $colour) {
             $colour = $isBackgroundColour ? '#ffffff' : '#000000';
         }
+
         $colour = strtolower($colour);
         if ('transparent' === $colour) {
             return 'transparent';
         }
+
         if (! strpos((string) $colour, '#')) {
             $colour = '#' . $colour;
         }
@@ -239,7 +244,7 @@ class DBColour extends Color
     public function Inverted(): static
     {
         // Ensure the colour is 6 characters long
-        $colour = str_pad(ltrim($this->value, '#'), 6, '0', STR_PAD_RIGHT);
+        $colour = str_pad(ltrim((string) $this->value, '#'), 6, '0', STR_PAD_RIGHT);
 
         // Convert the colour to decimal
         $colour = hexdec($colour);
@@ -274,12 +279,14 @@ class DBColour extends Color
             $readableColourObj = $this->getReadableColour();
             $style .= $readableColourObj->getCssVarLine($this->kebabCase($this->getName()) . '-font');
         }
+
         foreach ($this->getRelatedColours() as $name => $relatedColour) {
             $relatedColourObj = self::get_colour_as_db_field($relatedColour, $this->name);
             $style .= $relatedColourObj->getCssVarLine($name);
             $relatedColourObjReadable = $relatedColourObj->getReadableColour();
             $style .= $relatedColourObjReadable->getCssVarLine($name . '-font');
         }
+
         $style .= PHP_EOL . '}';
 
         return $style . (PHP_EOL . '</style>');
@@ -384,7 +391,7 @@ class DBColour extends Color
 
     protected function kebabCase(string $string)
     {
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $string));
+        return strtolower((string) preg_replace('/(?<!^)[A-Z]/', '-$0', $string));
     }
 
     private function classCleanup(string $name): string
@@ -392,6 +399,6 @@ class DBColour extends Color
         $name = str_replace('#', '', $name);
         $name = preg_replace('#[^A-Za-z0-9]#', '-', $name);
 
-        return static::CSS_CLASS_PREFIX . '-' . trim(trim(strtolower($name), '-'));
+        return static::CSS_CLASS_PREFIX . '-' . trim(trim(strtolower((string) $name), '-'));
     }
 }

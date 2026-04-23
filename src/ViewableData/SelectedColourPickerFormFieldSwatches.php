@@ -2,6 +2,7 @@
 
 namespace Sunnysideup\SelectedColourPicker\ViewableData;
 
+use Exception;
 use SilverStripe\Core\Convert;
 use SilverStripe\Forms\LiteralField;
 use SilverStripe\ORM\FieldType\DBField;
@@ -29,7 +30,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
     public static function get_swatches_html(string $name, ?string $value, array $colours, bool $isBackgroundColour): string
     {
         $options = static::get_swatches_field_inner((string) $value, $colours, $isBackgroundColour);
-        $id = $name . rand(0, 99999999999);
+        $id = $name . random_int(0, 99999999999);
         $js = Convert::raw2att('document.querySelector("#' . $id . '").style.display="block";');
 
         return '
@@ -47,7 +48,7 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
     {
         $color = trim($color);
         $prependHash = false;
-        if (false !== strpos($color, '#')) {
+        if (str_contains($color, '#')) {
             $prependHash = true;
             $color = str_replace('#', '', $color);
         }
@@ -62,20 +63,20 @@ class SelectedColourPickerFormFieldSwatches extends ViewableData
                 $color = preg_replace('#(.)(.)(.)#', '\\1\\1\\2\\2\\3\\3', $color);
             }
         } else {
-            throw new \Exception("Invalid hex length ({$len}). Length must be 3 or 6 characters - colour is" . $color);
+            throw new Exception(sprintf('Invalid hex length (%s). Length must be 3 or 6 characters - colour is', $len) . $color);
         }
 
-        if (! preg_match('#^[a-f0-9]{6}$#i', $color)) {
-            throw new \Exception(sprintf('Invalid hex string #%s', htmlspecialchars($color, ENT_QUOTES)));
+        if (! preg_match('#^[a-f0-9]{6}$#i', (string) $color)) {
+            throw new Exception(sprintf('Invalid hex string #%s', htmlspecialchars((string) $color, ENT_QUOTES)));
         }
 
-        $r = dechex(255 - hexdec(substr($color, 0, 2)));
+        $r = dechex(255 - hexdec(substr((string) $color, 0, 2)));
         $r = (strlen($r) > 1) ? $r : '0' . $r;
 
-        $g = dechex(255 - hexdec(substr($color, 2, 2)));
+        $g = dechex(255 - hexdec(substr((string) $color, 2, 2)));
         $g = (strlen($g) > 1) ? $g : '0' . $g;
 
-        $b = dechex(255 - hexdec(substr($color, 4, 2)));
+        $b = dechex(255 - hexdec(substr((string) $color, 4, 2)));
         $b = (strlen($b) > 1) ? $b : '0' . $b;
 
         return ($prependHash ? '#' : '') . $r . $g . $b;
