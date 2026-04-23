@@ -16,7 +16,9 @@
   "type": "silverstripe-vendormodule",
   "require": {
     "silverstripe/framework": "^6.0",
-    "bimthebam/silverstripe-native-color-input": "^1.1"
+    "bimthebam/silverstripe-native-color-input": "^1.1",
+    "tractorcow/silverstripe-colorpicker" => "dev-master",
+    "fromholdio/silverstripe-colorpalette" => "dev-main"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
@@ -43,17 +45,5 @@
       "type": "vcs",
       "url": "git@github.com:sunnysideup/silverstripe-colorpalette.git"
     }
-  ],
-  "yet-to-update": {
-    "fromholdio/silverstripe-colorpalette": {
-      "section": "require",
-      "current": "dev-master",
-      "reason": "no-compatible-stable-release"
-    },
-    "tractorcow/silverstripe-colorpicker": {
-      "section": "require",
-      "current": "^4.1",
-      "reason": "no-compatible-stable-release"
-    }
-  }
+  ]
 }
