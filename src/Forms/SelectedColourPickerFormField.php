@@ -2,11 +2,13 @@
 
 namespace Sunnysideup\SelectedColourPicker\Forms;
 
+use Override;
+use SilverStripe\Forms\Validation\Validator;
+use SilverStripe\Core\Validation\ValidationResult;
+use SilverStripe\Model\List\ArrayList;
+use SilverStripe\Model\ArrayData;
 use SilverStripe\Forms\TextField;
-use SilverStripe\Forms\Validator;
-use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\FieldType\DBField;
-use SilverStripe\View\ArrayData;
 use Sunnysideup\SelectedColourPicker\ViewableData\SelectedColourPickerFormFieldSwatches;
 
 class SelectedColourPickerFormField extends TextField
@@ -45,11 +47,11 @@ class SelectedColourPickerFormField extends TextField
      *
      * @param Validator $validator
      */
-    public function validate($validator): bool
+    #[Override]
+    public function validate(): ValidationResult
     {
         if ($this->limitedToOptions && $this->value && ! isset($this->source[$this->value])) {
-            $validator->validationError(
-                $this->name,
+            $valid->addError(
                 'Please selected from suggested options only',
                 'validation'
             );
@@ -60,6 +62,7 @@ class SelectedColourPickerFormField extends TextField
         return true;
     }
 
+    #[Override]
     public function Field($properties = [])
     {
         $this->setAttribute('list', $this->ID() . '_List');
@@ -80,21 +83,20 @@ class SelectedColourPickerFormField extends TextField
 
     public function ColourOptionsAsArrayList(): ArrayList
     {
-        $al = new ArrayList();
+        $al = ArrayList::create();
         foreach ($this->source as $colour => $label) {
             $al->push(
-                new ArrayData(
-                    [
-                        'Colour' => $colour,
-                        'Label' => $label,
-                    ]
-                )
+                ArrayData::create([
+                    'Colour' => $colour,
+                    'Label' => $label,
+                ])
             );
         }
 
         return $al;
     }
 
+    #[Override]
     public function Type()
     {
         return 'selected-colour-picker';
