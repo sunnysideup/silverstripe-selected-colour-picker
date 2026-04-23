@@ -17,8 +17,8 @@
   "require": {
     "silverstripe/framework": "^6.0",
     "bimthebam/silverstripe-native-color-input": "^1.1",
-    "tractorcow/silverstripe-colorpicker" => "dev-master",
-    "fromholdio/silverstripe-colorpalette" => "dev-main"
+    "tractorcow/silverstripe-colorpicker": "dev-master",
+    "fromholdio/silverstripe-colorpalette": "dev-main"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
