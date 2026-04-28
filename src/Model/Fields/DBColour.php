@@ -2,6 +2,7 @@
 
 namespace Sunnysideup\SelectedColourPicker\Model\Fields;
 
+use Override;
 use BimTheBam\NativeColorInput\Form\Field\ColorField;
 use Fromholdio\ColorPalette\Fields\ColorPaletteField;
 use SilverStripe\Core\Config\Config;
@@ -225,6 +226,7 @@ class DBColour extends Color
         return $colour;
     }
 
+    #[Override]
     public function scaffoldFormField(?string $title = null, array $params = []): ?FormField
     {
         $array = static::get_colours_for_dropdown();
