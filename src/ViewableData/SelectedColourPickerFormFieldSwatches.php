@@ -84,12 +84,36 @@ class SelectedColourPickerFormFieldSwatches extends ModelData
         return ($prependHash ? '#' : '') . $r . $g . $b;
     }
 
+    public static function hex_black_or_white(string $color): string
+    {
+        $color = ltrim(trim($color), '#');
+
+        // Expand shorthand hex (#abc => #aabbcc)
+        if (strlen($color) === 3) {
+            $color = preg_replace('/(.)/', '$1$1', $color);
+        }
+
+        if (!preg_match('/^[a-f0-9]{6}$/i', $color)) {
+            throw new Exception("Invalid hex colour: {$color}");
+        }
+
+        $r = hexdec(substr($color, 0, 2));
+        $g = hexdec(substr($color, 2, 2));
+        $b = hexdec(substr($color, 4, 2));
+
+        // Perceived brightness
+        $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
+
+        // Light backgrounds => black text
+        // Dark backgrounds => white text
+        return $brightness > 128 ? '#000000' : '#ffffff';
+    }
     protected static function get_swatches_field_inner(string $value, array $colours, bool $isBackgroundColour): array
     {
         $value = DBColour::check_colour($value, $isBackgroundColour);
         $ids = [];
         foreach ($colours as $colour => $name) {
-            $invertColour = self::hex_invert($colour);
+            $invertColour = self::hex_black_or_white($colour);
             if ($isBackgroundColour) {
                 $styleA = 'background-color: ' . $colour . '; color: ' . $invertColour . '; ';
             } else {
